@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, NavLink, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
 
-const RAW_API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000'
+const DEFAULT_API_ORIGIN = typeof window !== 'undefined' ? window.location.origin : 'http://127.0.0.1:5000'
+const RAW_API_URL = import.meta.env.VITE_API_URL || DEFAULT_API_ORIGIN
 const API_URL = RAW_API_URL.endsWith('/api') ? RAW_API_URL : `${RAW_API_URL.replace(/\/+$/, '')}/api`
 const API_BASE = API_URL
 

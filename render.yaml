@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: eduelevate
+    env: node
+    plan: free
+    buildCommand: npm install && npm --prefix backend install && npm run build
+    startCommand: npm --prefix backend start
+    envVars:
+      - key: NODE_ENV
+        value: production
