@@ -1,0 +1,25 @@
+<svg width="420" height="120" viewBox="0 0 420 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bookBlue" x1="36" y1="16" x2="160" y2="86" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#24B2FF"/>
+      <stop offset="1" stop-color="#0E57C4"/>
+    </linearGradient>
+    <linearGradient id="bookOrange" x1="162" y1="20" x2="268" y2="92" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF9F1C"/>
+      <stop offset="1" stop-color="#F25F00"/>
+    </linearGradient>
+    <linearGradient id="arrowBlue" x1="132" y1="4" x2="132" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1D8BFF"/>
+      <stop offset="1" stop-color="#0E57C4"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M40 72C65 62 95 61 122 70V19C95 10 66 9 40 16V72Z" fill="url(#bookBlue)"/>
+  <path d="M264 72C239 62 209 61 182 70V19C209 10 238 9 264 16V72Z" fill="url(#bookOrange)"/>
+  <path d="M130 70C113 54 92 44 72 38" stroke="white" stroke-width="5" stroke-linecap="round"/>
+  <path d="M172 70C189 54 210 44 232 38" stroke="white" stroke-width="5" stroke-linecap="round"/>
+  <path d="M132 8L149 32H139V58H125V32H115L132 8Z" fill="url(#arrowBlue)"/>
+
+  <text x="0" y="112" font-family="Poppins, sans-serif" font-size="62" font-weight="700" fill="#0E57C4">Edu</text>
+  <text x="118" y="112" font-family="Poppins, sans-serif" font-size="62" font-weight="700" fill="#F25F00">Elevate</text>
+</svg>
