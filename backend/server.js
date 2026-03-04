@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url'
 
 const app = express()
 const PORT = process.env.PORT || 5000
+const isVercel = Boolean(process.env.VERCEL)
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const distPath = path.resolve(__dirname, '../dist')
@@ -12,7 +13,7 @@ const distPath = path.resolve(__dirname, '../dist')
 app.use(cors())
 app.use(express.json())
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' && !isVercel) {
   app.use(express.static(distPath))
 }
 
@@ -255,12 +256,16 @@ app.post('/api/resume', (req, res) => {
   res.status(201).json(resumesByEmail[email])
 })
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' && !isVercel) {
   app.get('*', (req, res) => {
     res.sendFile(path.join(distPath, 'index.html'))
   })
 }
 
-app.listen(PORT, () => {
-  console.log(`EduElevate backend running on http://127.0.0.1:${PORT}`)
-})
+if (!isVercel) {
+  app.listen(PORT, () => {
+    console.log(`EduElevate backend running on http://127.0.0.1:${PORT}`)
+  })
+}
+
+export default app
