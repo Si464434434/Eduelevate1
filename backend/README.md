@@ -12,11 +12,19 @@ npm run dev
 
 Server URL: `http://127.0.0.1:5000`
 
+## Environment
+
+- `JWT_SECRET` (recommended in production)
+- `MONGODB_URI` (optional; when set, data persists in MongoDB)
+
+If `MONGODB_URI` is not set, backend runs with in-memory demo storage.
+
 ## Key Endpoints
 
 - `GET /api/health`
 - `POST /api/auth/login`
 - `POST /api/auth/register`
+- `GET /api/auth/me`
 - `GET /api/opportunities`
 - `GET /api/opportunities/:id`
 - `POST /api/opportunities`
@@ -38,4 +46,4 @@ Server URL: `http://127.0.0.1:5000`
 - Student: `student@test.com` / `pass123`
 - Admin: `admin@test.com` / `admin123`
 
-Note: Data is stored in-memory (resets on server restart).
+Note: Data persists only when `MONGODB_URI` is configured.

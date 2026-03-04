@@ -4,6 +4,7 @@ import { Link, NavLink, Navigate, Route, Routes, useNavigate, useParams } from '
 const RAW_API_URL = import.meta.env.VITE_API_URL || '/api'
 const API_URL = RAW_API_URL.endsWith('/api') ? RAW_API_URL : `${RAW_API_URL.replace(/\/+$/, '')}/api`
 const API_BASE = API_URL
+const SESSION_KEY = 'eduelevate_session'
 
 const seedHostels = [
   { id: 1, name: 'Skyline Boys Hostel', gender: 'Boys', fee: 4500, area: 'Sector 18' },
@@ -43,8 +44,25 @@ const navItems = [
 ]
 
 async function api(path, options = {}) {
+  let token = ''
+  if (typeof window !== 'undefined') {
+    try {
+      const saved = window.localStorage.getItem(SESSION_KEY)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        token = parsed?.token || ''
+      }
+    } catch {
+      token = ''
+    }
+  }
+
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {})
+    },
     ...options
   })
 
@@ -320,7 +338,7 @@ function Login({ onLogin, mode = 'student' }) {
         throw new Error('Use Admin Login page for admin account.')
       }
 
-      onLogin(data.user)
+      onLogin(data.user, data.token)
       navigate(data.user.role === 'admin' ? '/admin' : '/opportunities')
     } catch (err) {
       setError(err.message)
@@ -848,7 +866,18 @@ function Admin({ opportunities, setOpportunities, applications }) {
 }
 
 export default function App() {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(() => {
+    if (typeof window === 'undefined') return null
+    try {
+      const saved = window.localStorage.getItem(SESSION_KEY)
+      if (!saved) return null
+      const parsed = JSON.parse(saved)
+      if (!parsed?.user || !parsed?.token) return null
+      return parsed.user
+    } catch {
+      return null
+    }
+  })
   const [opportunities, setOpportunities] = useState([])
   const [bookmarks, setBookmarks] = useState([])
   const [applications, setApplications] = useState([])
@@ -860,6 +889,20 @@ export default function App() {
   const [apiBannerDismissed, setApiBannerDismissed] = useState(false)
 
   const email = user?.email || ''
+
+  const handleLogin = (loggedInUser, token) => {
+    setUser(loggedInUser)
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(SESSION_KEY, JSON.stringify({ user: loggedInUser, token }))
+    }
+  }
+
+  const handleLogout = () => {
+    setUser(null)
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(SESSION_KEY)
+    }
+  }
 
   useEffect(() => {
     api('/opportunities').then(setOpportunities).catch(() => setOpportunities([]))
@@ -963,7 +1006,7 @@ export default function App() {
   return (
     <Layout
       user={user}
-      onLogout={() => setUser(null)}
+      onLogout={handleLogout}
       apiDown={apiDown}
       apiChecking={apiChecking}
       apiErrorMessage={apiErrorMessage}
@@ -973,8 +1016,8 @@ export default function App() {
     >
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login onLogin={setUser} mode="student" />} />
-        <Route path="/admin-login" element={<Login onLogin={setUser} mode="admin" />} />
+        <Route path="/login" element={<Login onLogin={handleLogin} mode="student" />} />
+        <Route path="/admin-login" element={<Login onLogin={handleLogin} mode="admin" />} />
         <Route path="/register" element={<Register />} />
         <Route path="/opportunities" element={<Opportunities opportunities={opportunities} bookmarks={bookmarks} toggleBookmark={toggleBookmark} />} />
         <Route path="/opportunity/:id" element={<OpportunityDetail opportunities={opportunities} bookmarks={bookmarks} toggleBookmark={toggleBookmark} addApplication={addApplication} user={user} />} />
