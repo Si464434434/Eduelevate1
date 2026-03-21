@@ -5,14 +5,25 @@ import { fileURLToPath } from 'url'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
+import dotenv from 'dotenv'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+// Support env files from both backend/.env and project-root/.env.
+dotenv.config({ path: path.resolve(__dirname, '.env') })
+dotenv.config({ path: path.resolve(__dirname, '../.env') })
 
 const app = express()
 const PORT = process.env.PORT || 5000
 const isVercel = Boolean(process.env.VERCEL)
-const useDb = Boolean(process.env.MONGODB_URI)
+const mongoUri =
+  process.env.MONGODB_URI ||
+  process.env.MONGO_URI ||
+  process.env.DATABASE_URL ||
+  ''
+const useDb = Boolean(mongoUri)
 const JWT_SECRET = process.env.JWT_SECRET || 'change-this-secret-in-production'
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 const distPath = path.resolve(__dirname, '../dist')
 
 app.use(cors())
@@ -133,7 +144,7 @@ const ensureMongoConnected = async () => {
   if (!useDb) return
   if (mongoose.connection.readyState === 1) return
   if (!mongoConnectPromise) {
-    mongoConnectPromise = mongoose.connect(process.env.MONGODB_URI)
+    mongoConnectPromise = mongoose.connect(mongoUri)
   }
   await mongoConnectPromise
 }
@@ -594,6 +605,10 @@ if (process.env.NODE_ENV === 'production' && !isVercel) {
 if (!isVercel) {
   app.listen(PORT, () => {
     console.log(`EduElevate backend running on http://127.0.0.1:${PORT}`)
+    console.log(`Database mode: ${useDb ? 'mongodb' : 'in-memory'}`)
+    if (!useDb) {
+      console.log('MongoDB env not found. Set MONGODB_URI (or MONGO_URI) in backend/.env or project .env')
+    }
   })
 }
 

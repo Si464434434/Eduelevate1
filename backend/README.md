@@ -17,6 +17,19 @@ Server URL: `http://127.0.0.1:5000`
 - `JWT_SECRET` (recommended in production)
 - `MONGODB_URI` (optional; when set, data persists in MongoDB)
 
+You can put env vars in either:
+- `backend/.env`
+- project root `.env` (`../.env`)
+
+Example:
+
+```env
+JWT_SECRET=replace-with-a-long-random-secret
+MONGODB_URI=mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/eduelevate?retryWrites=true&w=majority
+```
+
+If your password has special characters, URL-encode it.
+
 If `MONGODB_URI` is not set, backend runs with in-memory demo storage.
 
 ## Key Endpoints
